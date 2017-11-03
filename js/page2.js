@@ -6,7 +6,13 @@
     var userID="";
     var isVerrify=0;
     var firstInto=false;
-
+    $(function(){
+        if (window.history && window.history.pushState) {
+            history.pushState(null, null, document.URL);
+            window.addEventListener('popstate', forbidBack);
+        }
+    });
+    function forbidBack(){}
     //获取用户状态 0,1,2
     $.ajax({
         type:"post",
