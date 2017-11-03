@@ -257,9 +257,9 @@
             $("#p3-intro").click(function(){
                 $(this).css("display","none")
             });
-            $("#view-rule").click(function(){
+            /*$("#view-rule").click(function(){
                 $("#p3-intro").css("display","block")
-            });
+            });*/
             $("#page3 .p3-ticket-box").click(function(){//券包点击
                 var status=$(this).attr("data-status");
                 var num=parseInt($(this).attr("data-num"));
@@ -470,11 +470,17 @@
 
 
     //底部按钮事件
+    $("#view-rule").click(function(){
+        $("#p1-notice").css("display","block");
+    });
+    $("#p1-notice").click(function(){
+        $("#p1-notice").css("display","none");
+    });
     $("#view-box").click(function(){
         if(isVerrify===1&&getPage3.TICKET.length>0){
             getPage3.getPage4()
         }else if(isVerrify===2){
-            alert("您已经抽过奖了，请在券包查看")
+            alert("您已经参与过抢券，请在“我的券包”中查看！")
         }else{
             alert("您还没有选择抽奖的奖券，最多可以选择5张")
         }
@@ -539,12 +545,12 @@
             var that=this;
             $("#my-body").load("page5.html",function(){
                 that.renderPage5(msg);
-                $("#view-rule").click(function(){
+               /* $("#view-rule").click(function(){
                     $("#p5-rule").css("display","block");
                 })
                 $("#p5-rule").click(function(){
                     $("#p5-rule").css("display","none");
-                });
+                });*/
                 $("#sub-evaluate").click(function(){
                     that.obj.describe=$("#describe").val();
                     that.obj.user_id=userID;

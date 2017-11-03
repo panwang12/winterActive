@@ -213,8 +213,13 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,dl,dd{
     margin-left: 40%;
     width: 60%;
     height: 80px;
-    padding: 10px 10px 10px 0;
+    padding: 10px 10px 10px 5px;
     font-size: 12px;
+    vertical-align: middle;
+    display:table-cell;
+}
+.col-xs-8 .left-info h3{
+    padding-top:40px;
 }
  .col-xs-8 .right-title{
      height: 154px;
@@ -228,12 +233,13 @@ h1,h2,h3,h4,h5,h6,p,ul,ol,dl,dd{
 }
 .col-xs-8 .right-title{
     text-align: center;
-    padding-top: 59px;
     font-size: 18px;
+    padding-right: 25px;
 }
 .live-area h3{
-    padding: 8px 10px;
-
+    padding:10px;
+    vertical-align: middle;
+    display:table-cell
 }
 .prize-name{
     width: 25%;
