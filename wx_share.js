@@ -1,144 +1,118 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-$(function () {
 
+
+
+
+
+
+
+shareInit();
+function shareInit() {
     $.ajax({
-        url: "http://www.you-partners.com/interface/cicadacloud/share_sample.php",
-        type: "GET",
-        cache: true,
-        data: {u: location.href},
-        dataType: "jsonp",
-        success: function (back) {
-            //alert(location.href);
-            wx.config({
-                debug: false,
-                appId: back.appId,
-                timestamp: back.timestamp,
-                nonceStr: back.nonceStr,
-                signature: back.signature,
-                jsApiList: [
-                    // 所有要调用的 API 都要加到这个列表中
-                    'onMenuShareTimeline',
-                    'onMenuShareAppMessage',
-                ]
-            });
+        url: "/jssdk/getConfig",
+        type: "POST",
+        data: {
+            "appId": "wxa0d59d5a3705a608",
+            "url": location.href.split('#')[0]
         },
-        error: function () {
-        }
-    });
-});
+        dataType: "json",
+        success: function (result) {
 
-wx.ready(function () {
-    // 在这里调用 API
-//    wx.hideMenuItems({
-//        menuList: [
-//            'menuItem:share:appMessage',
-//            'menuItem:share:timeline',
-//            "menuItem:share:qq",
-//            'menuItem:share:QZone',
-//            "menuItem:copyUrl"
-//        ] // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
-//    });
-    wx.error(function (res) {
-//        alert(res);
-    });
-
-//    wx.hideOptionMenu();
-    addWeiXinEvent(0);
-});
-
-var addWeiXinEvent = function (index) {
-//    $.shareUrl = "http://www.stride-base.com/hui_" + $.index + ".html";
-    $.shareAppTitle = "入秋盛惠季 半价轻松筹";
-    $.shareAppDesc = "盛惠狂欢 好事成双,东风雪铁龙2017年冬季送温暖，爆款秒杀、惊喜特惠、更有海量礼券等你拿！";
-    $.timelineTitle = "盛惠狂欢 好事成双,东风雪铁龙2017年冬季送温暖，爆款秒杀、惊喜特惠、更有海量礼券等你拿！";
-    $.shareImage = "http://winter.dfcitroenclub.com/winterActive/images/share.jpg";
-    $.shareUrl = "http://winter.dfcitroenclub.com/winterActive/index.html";
-
-    wx.onMenuShareAppMessage({
-        title: $.shareAppTitle,
-        desc: $.shareAppDesc,
-        link: $.shareUrl,
-        imgUrl: $.shareImage,
-        trigger: function (res) {
-
+            if (result && result.success) {
+                wx.config({
+                    debug: false,
+                    appId: result.data.appId, // 必填，公众号的唯一标识
+                    timestamp: result.data.timestamp, // 必填，生成签名的时间戳
+                    nonceStr: result.data.noncestr, // 必填，生成签名的随机串
+                    signature: result.data.signature, // 必填，签名，见附录1
+                    jsApiList: [
+                        'onMenuShareTimeline','onMenuShareAppMessage',
+                        'onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone'
+                    ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                });
+            } else {
+                window.location.reload();
+            }
         },
-        success: function (res) {
-
-         // KM.km_track_share({t: $.shareAppTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareAppMessage:success"});
-        },
-        cancel: function (res) {
-           // KM.km_track_share({t: $.shareAppTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareAppMessage:cancel"});
-        },
-        fail: function (res) {
-
-        }
-    });
-    wx.onMenuShareTimeline({
-        title: $.timelineTitle,
-        link: $.shareUrl,
-        imgUrl: $.shareImage,
-        trigger: function (res) {
-        },
-        success: function (res) {
-           // KM.km_track_share({t: $.timelineTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareTimeline:cancel"});
-
-        },
-        cancel: function (res) {
-          //  KM.km_track_share({t: $.timelineTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareTimeline:cancel"});
-
-        },
-        fail: function (res) {
-        }
-    });
-};
-
-var addWeiXinEventss = function () {
-//    $.shareUrl = "http://www.stride-base.com/hui_" + $.index + ".html";
-    $.shareAppTitle = "";
-    $.shareAppDesc = " ";
-    $.timelineTitle = "";
-    $.shareImage = "";
-    $.shareUrl = "";
-
-    wx.onMenuShareAppMessage({
-        title: $.shareAppTitle,
-        desc: $.shareAppDesc,
-        link: $.shareUrl,
-        imgUrl: $.shareImage,
-        trigger: function (res) {
-
-        },
-        success: function (res) {
-
-            //KM.km_track_share({t: $.shareAppTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareAppMessage:success"});
-        },
-        cancel: function (res) {
-            //KM.km_track_share({t: $.shareAppTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareAppMessage:cancel"});
-        },
-        fail: function (res) {
-
-        }
-    });
-    wx.onMenuShareTimeline({
-        title: $.timelineTitle,
-        link: $.shareUrl,
-        imgUrl: $.shareImage,
-        trigger: function (res) {
-        },
-        success: function (res) {
-            KM.km_track_share({t: $.timelineTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareTimeline:cancel"});
-
-        },
-        cancel: function (res) {
-            KM.km_track_share({t: $.timelineTitle, ext: "", img: $.shareImage, u: $.shareUrl, desc: $.shareAppDesc, sr: "ShareTimeline:cancel"});
-
-        },
-        fail: function (res) {
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.reload();
         }
     });
 }
+
+var sharePic = 'http://bk.dongfeng-citroenclub.com.cn/static/mobile/campaign/winterActive/images/share.jpg';
+var shareTitle = '盛惠狂欢 好事成双';
+var shareUrl="http://bk.dongfeng-citroenclub.com.cn/static/mobile/campaign/winterActive/index.html";
+var shareDesc="东风雪铁龙2017年冬季送温暖，爆款秒杀、惊喜特惠、更有海量礼券等你拿！";
+wx.ready(function(){
+    wx.onMenuShareTimeline({
+        title: shareTitle, // 分享标题
+        link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+        imgUrl: sharePic, // 分享图标
+        success: function () {
+
+            // 用户确认分享后执行的回调函数
+        },
+        cancel: function () {
+            // 用户取消分享后执行的回调函数
+        }
+    });
+    wx.onMenuShareAppMessage({
+        title: shareTitle, // 分享标题
+        desc: shareDesc, // 分享描述
+        link: shareUrl, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+        imgUrl: sharePic, // 分享图标
+        type: '', // 分享类型,music、video或link，不填默认为link
+        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+        success: function () {
+            // 用户确认分享后执行的回调函数
+        },
+        cancel: function () {
+            // 用户取消分享后执行的回调函数
+        }
+    });
+
+    wx.onMenuShareQQ({
+        title: shareTitle, // 分享标题
+        desc: shareDesc, // 分享描述
+        link: shareUrl, // 分享链接
+        imgUrl: sharePic, // 分享图标
+        success: function () {
+            // 用户确认分享后执行的回调函数
+        },
+        cancel: function () {
+            // 用户取消分享后执行的回调函数
+        }
+    });
+
+    wx.onMenuShareWeibo({
+        title: shareTitle, // 分享标题
+        desc: shareTitle, // 分享描述
+        link: shareUrl, // 分享链接
+        imgUrl: sharePic, // 分享图标
+        success: function () {
+            // 用户确认分享后执行的回调函数
+        },
+        cancel: function () {
+            // 用户取消分享后执行的回调函数
+        }
+    });
+
+    wx.onMenuShareQZone({
+        title: shareTitle, // 分享标题
+        desc: shareTitle, // 分享描述
+        link: shareUrl, // 分享链接
+        imgUrl: sharePic, // 分享图标
+        success: function () {
+            // 用户确认分享后执行的回调函数
+        },
+        cancel: function () {
+            // 用户取消分享后执行的回调函数
+        }
+    });
+});
+
+wx.error(function(res){
+    // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+});
+

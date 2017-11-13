@@ -6,6 +6,7 @@
     var userID="";
     var isVerrify=0;
     var firstInto=false;
+
     $(function(){
         if (window.history && window.history.pushState) {
             history.pushState(null, null, document.URL);
@@ -33,6 +34,7 @@
                 userID=obj.data.user_ID;
 
             };
+
             if(isVerrify===0){
                 getPage2.init();
             }else if(isVerrify===1){
@@ -40,7 +42,6 @@
             }else if(isVerrify===2){
                 viewMyPage.init(userID)
             }
-
         },
         error:function(){
             console.log("请求错误")
@@ -58,7 +59,6 @@
                 //查看vin码提示
                 $("#vin-help").click(function(){
                     $("#p2-notice").css("display","block");
-                    console.log(this);
                 });
                 $("#p2-notice").click(function(){
                     $(this).css("display","none");
@@ -67,6 +67,7 @@
                     type:"post",
                     url:"http://winter.dfcitroenclub.com/api/Values/GetDriverInfo",
                     contentType:"application/json",
+                    timeout:20000,
                     data:JSON.stringify({openid:openid}),
                     success:function(obj){
                         if(obj.respCode==="1"){
@@ -79,7 +80,10 @@
                         };
                         that.subUserMsg();
                     },
-                    error:function(){
+                    error:function(jqXHR, textStatus, errorThrown){
+                        if(textStatus=="timeout"){
+                            alert("由于访问人数过多，请稍后再试！");
+                        }
                         console.log("请求错误")
                     }
                 });
@@ -100,6 +104,7 @@
                             type:"post",
                             url:"http://winter.dfcitroenclub.com/api/Values/DriverCer",
                             data:JSON.stringify(obj),
+                            timeout:20000,
                             contentType:"application/json",
                             success:function(obj){
                                 if(obj.status==="0"){
@@ -114,7 +119,10 @@
                                 $("#go-lottery-box").attr("disabled",false);
                                 $("#loadImg").css("display","none");
                             },
-                            error:function(){
+                            error:function(jqXHR, textStatus, errorThrown){
+                                if(textStatus=="timeout"){
+                                    alert("由于访问人数过多，请稍后再试！");
+                                }
                                 console.log("请求错误")
                             }
                         });
@@ -126,14 +134,15 @@
             });
         },
         getUserId:function(obj){//提交用户信息
-            obj.verifystatus=this.isVerify;
+            obj.verifystatus=this.isVerify;//是否是老认证车主
             firstInto=true;//用户是否为第一次进入页面
             var msg=JSON.stringify(obj);
-            $.ajax({
+            $.ajax({//提交用户留资
                 type:"post",
                 url:"http://winter.dfcitroenclub.com/api/Values/SaveUserInfo",
                 data:msg,
                 contentType:"application/json",
+                timeout:20000,
                 success:function(res){
                     if(res.code===0){
                         //第一次提交
@@ -148,7 +157,10 @@
                 complete:function(){
                     $("#go-lottery-box").attr("disabled",false);
                 },
-                error:function(){
+                error:function(jqXHR, textStatus, errorThrown){
+                    if(textStatus=="timeout"){
+                        alert("由于访问人数过多，请稍后再试！");
+                    }
                     console.log("请求错误")
                 }
             });
@@ -164,11 +176,12 @@
         },
         getTicketMsg:function(userId){//获取奖券
             var that=this;
-            $.ajax({
+            $.ajax({//获取奖券
                 type:"post",
                 url:"http://winter.dfcitroenclub.com/api/Values/GetCoupons",
                 data:JSON.stringify({userID:userId}),
                 contentType:"application/json",
+                timeout:20000,
                 success:function(msg){
                     if(msg.code===0){
                         that.ticketBoxAll=msg;
@@ -183,7 +196,10 @@
                         });
                     }
                 },
-                error:function(){
+                error:function(jqXHR, textStatus, errorThrown){
+                    if(textStatus=="timeout"){
+                        alert("由于访问人数过多，请稍后再试！");
+                    }
                     console.log("请求错误")
                 }
             });
@@ -312,6 +328,7 @@
                 });
                 //开始抽奖
                 $("#get-ticket").click(function(){
+                    $("#get-ticket").attr("disabled",true);
                     var obj={};
                     obj.userID=userID;
                     obj.couponIDs=that.TICKET;
@@ -321,6 +338,7 @@
                         url:"http://winter.dfcitroenclub.com/api/Values/CardBuying",
                         data:JSON.stringify(obj),
                         contentType:"application/json",
+                        timeout:20000,
                         success:function(msg){
                             if(msg.code===-3){
                                 alert("您已经参与过抢券，请在我的券包查看。");
@@ -329,8 +347,14 @@
                                 viewMyPage.init(userID)
                             }
                         },
-                        error:function(){
-                            console.log("请求错误")
+                        complete:function(){
+                            $("#get-ticket").attr("disabled",false);
+                        },
+                        error:function(jqXHR, textStatus, errorThrown){
+                            if(textStatus=="timeout"){
+                                alert("由于访问人数过多，请稍后再试！");
+                            }
+                            alert("页面错误，请稍后再试！");
                         }
                     });
 
@@ -520,11 +544,15 @@
                 url:"http://winter.dfcitroenclub.com/api/Values/MyCardPackage",
                 data:JSON.stringify({userID:userID}),
                 contentType:"application/json",
+                timeout:20000,
                 success:function(msg){
                     that.loadPage5(msg);
                 },
-                error:function(){
-                    console.log("请求错误");
+                error:function(jqXHR, textStatus, errorThrown){
+                    if(textStatus=="timeout"){
+                        alert("由于访问人数过多，请稍后再试！");
+                    }
+                    console.log("请求错误")
                 }
             });
         },
@@ -551,12 +579,6 @@
             var that=this;
             $("#my-body").load("page5.html",function(){
                 that.renderPage5(msg);
-               /* $("#view-rule").click(function(){
-                    $("#p5-rule").css("display","block");
-                })
-                $("#p5-rule").click(function(){
-                    $("#p5-rule").css("display","none");
-                });*/
                 $("#sub-evaluate").click(function(){
                     that.obj.describe=$("#describe").val();
                     that.obj.user_id=userID;
@@ -585,28 +607,59 @@
                     });
                 });
                 $("#serve-level").click(function(){
-                    if(msg.code===0){
-                        alert("您还未到店使用奖券，请核销后再评价")
-                    }else{
-                        $("#serve-content").fadeIn();
-                        $(".appraise-detail i").click(function(){
-                            var num=parseInt( $(this).attr("data-msg"));
-                            switch(num){
-                                case 1:
-                                    alert("对服务产品满意程度");
-                                    break;
-                                case 2:
-                                    alert("对服务响应满意程度");
-                                    break;
-                                case 3:
-                                    alert("对服务态度满意程度");
-                                    break;
-                                case 4:
-                                    alert("对总体评价满意程度");
-                                    break;
+                    $.ajax({
+                        type:"post",
+                        url:"http://winter.dfcitroenclub.com/api/Values/CheckUserForWinner",
+                        contentType:"application/json",
+                        data:JSON.stringify({openid:openid}),
+                        success:function(obj){
+                            var isOver=false;
+                            var isOver1=false;
+                            if(obj.data===null){
+                                //用户未注册
+                                isVerrify=0
+                            }else if(obj.data.isver===true){
+                                //已经核销
+                                isOver=true;
                             }
-                        });
-                    }
+                            if(obj.data===null){
+                                //用户未注册
+                                isVerrify=0
+                            }else if(obj.data.iseval===true){
+                                //已经评价
+                                isOver1=true;
+                            };
+                            if(isOver===false){
+                                alert("您还未到店使用奖券，请核销后再评价")
+                            }else if(isOver1===true){
+                                alert("您已经评价过了！")
+                            }else{
+                                $("#serve-content").fadeIn();
+                                $(".appraise-detail i").click(function(){
+                                    var num=parseInt( $(this).attr("data-msg"));
+                                    switch(num){
+                                        case 1:
+                                            alert("对服务产品满意程度");
+                                            break;
+                                        case 2:
+                                            alert("对服务响应满意程度");
+                                            break;
+                                        case 3:
+                                            alert("对服务态度满意程度");
+                                            break;
+                                        case 4:
+                                            alert("对总体评价满意程度");
+                                            break;
+                                    }
+                                });
+                            }
+
+                        },
+                        error:function(){
+                            console.log("请求错误")
+                        }
+                    });
+
                     $(".star-box").click(function(e){
                         var star=parseInt($(e.target).attr("data-star"));
                         var moveX=(30*star-150)+"px";

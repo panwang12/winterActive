@@ -34,9 +34,6 @@ function slidePage(){
 slidePage();
 
 function getPage2(){
-    //var getWeixinOpenid='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxa0d59d5a3705a608&redirect_uri=https://mycitroen.dpca.com.cn/weixin/transfer/transferStation.do?param={"appID":"wxa0d59d5a3705a608","appsecret":"e75d5f11345b4f1f66b91fa319eaa079","url":"http://winter.dfcitroenclub.com/winterActive/page2.html"}&response_type=code&scope=snsapi_base&state=1#wechat_redirect';
-   // var getWeixinOpenid='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxa0d59d5a3705a608&redirect_uri=https://mycitroen.dpca.com.cn/weixin/transfer/transferStation.do?param={"appID":"wxa0d59d5a3705a608","appsecret":"e75d5f11345b4f1f66b91fa319eaa079","url":"http://winter.dfcitroenclub.com/winterActive/detail.html"}&response_type=code&scope=snsapi_base&state=1#wechat_redirect';
-   // window.location=getWeixinOpenid;
     window.location="detail.html";
 }
 $("#view-rule").click(function(){
@@ -101,6 +98,6 @@ $.ajax({
         })
     },
     error:function(){
-        console.log("�������")
+        console.log("请求错误")
     }
 });
