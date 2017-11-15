@@ -6,14 +6,6 @@
     var userID="";
     var isVerrify=0;
     var firstInto=false;
-
-    $(function(){
-        if (window.history && window.history.pushState) {
-            history.pushState(null, null, document.URL);
-            window.addEventListener('popstate', forbidBack);
-        }
-    });
-    function forbidBack(){}
     //获取用户状态 0,1,2
     $.ajax({
         type:"post",
@@ -28,11 +20,10 @@
                 //用户注册了，单未抽奖
                 isVerrify=1;
                 userID=obj.data.user_ID;
-            } else if(obj.data.iswinner===true){
+            }else if(obj.data.iswinner===true){
                 //已经抽过奖了
                 isVerrify=2;
                 userID=obj.data.user_ID;
-
             };
 
             if(isVerrify===0){
@@ -40,18 +31,34 @@
             }else if(isVerrify===1){
                 getPage3.init(userID);
             }else if(isVerrify===2){
-                viewMyPage.init(userID)
+                viewMyPage.init(userID);
             }
         },
         error:function(){
-            console.log("请求错误")
+            alert("页面错误，请刷新页面");
         }
     });
+    function loadingPage(url,callback){
+        $.ajax({
+            type:"get",
+            url:url,
+            contentType:"text/html",
+            success:function(obj){
+                $("#my-body").html(obj);
+                callback()
+            },
+            error:function(){
+                var html='<h3 id="detail-page-box" style="margin-top: 100px;text-align: center"><p >服务器繁忙</p><a style="font-size: 12px" href="index.html">点击这里重试</a></h3>'
+                $("#my-body").html(html);
+            }
+        });
+    }
     //用户留资
     var getPage2={
             isVerify:false,
             init:function(){
-                $("#my-body").load("page2.html",this.start);
+                var that=this;
+                loadingPage("page2.html",that.start)
             },
             start:function(){
                 var that=getPage2;
@@ -84,7 +91,7 @@
                         if(textStatus=="timeout"){
                             alert("由于访问人数过多，请稍后再试！");
                         }
-                        console.log("请求错误")
+                        alert("页面错误，请刷新页面")
                     }
                 });
 
@@ -200,13 +207,13 @@
                     if(textStatus=="timeout"){
                         alert("由于访问人数过多，请稍后再试！");
                     }
-                    console.log("请求错误")
+                    alert("页面错误，请刷新页面")
                 }
             });
         },
         renderPage3:function(msg){//渲染页面3
             var that=this;
-            $("#my-body").load("page3.html",function() {
+            loadingPage("page3.html",function() {
                 var html="";
                 msg.data.forEach(function (v, k) {
                     html += `<div class="row">
@@ -265,27 +272,25 @@
         getPage3:function(){
             if(firstInto===true){//第一次进入页面
                 //弹出框
-                $("#p3-intro").css("display","block");
-                firstInto=false;
+                $("#p3-intro").css("display","block");//活动说明弹窗
+                firstInto=false;//非第一次进入
             }
             $("[data-status='0']").addClass("no-select");//此卡券不能选
             for(var i=0;i<this.TICKET.length;i++){//获得ticket的券添加状态
-                var num=this.TICKET[i];
-                var tar=document.querySelector(`[data-num="${num}"]`);
-                $(tar).addClass("show-icon");
-                $(tar).attr("data-status","2");
+                var num=this.TICKET[i];//获得卡券名称
+                var tar=document.querySelector(`[data-num="${num}"]`);//获得卡券Dom
+                $(tar).addClass("show-icon");//显示已经选中的卡券
+                $(tar).attr("data-status","2");//更改卡券的状态
             };
-            $("#icon1").css("display","block");//?
-            $("#p3-intro").click(function(){
+            $("#icon1").css("display","block");//小图表
+            $("#p3-intro").click(function(){//点击隐藏活动说明
                 $(this).css("display","none")
             });
-            /*$("#view-rule").click(function(){
-                $("#p3-intro").css("display","block")
-            });*/
+
             $("#page3 .p3-ticket-box").click(function(){//券包点击
-                var status=$(this).attr("data-status");
+                var status=$(this).attr("data-status");//获得票券
                 var num=parseInt($(this).attr("data-num"));
-                if(status==="1"){
+                if(status==="1"){//未选中状态
                     if(getPage3.TICKET.length<5){
                         for(var j=0;j<getPage3.TICKET.length;j++){//防止重复
                             if(getPage3.TICKET[j]===num){
@@ -293,27 +298,27 @@
                             }
                         }
                         getPage3.TICKET.push(num);
-                        $(this).attr("data-status","2");
-                        $(this).addClass("show-icon");
+                        $(this).attr("data-status","2");//更改状态
+                        $(this).addClass("show-icon");//添加图标
                     }else{
                         alert("最多只能选择5张券！")
                     }
-                }else if(status==="2"){
+                }else if(status==="2"){//选中状态
                     for(var i=0;i<getPage3.TICKET.length;i++){
                         if(getPage3.TICKET[i]===num){
                             getPage3.TICKET.splice(i,1);
                         }
                     }
-                    $(this).removeClass("show-icon");
-                    $(this).attr("data-status","1");
+                    $(this).removeClass("show-icon");//删除图标
+                    $(this).attr("data-status","1");//更改状态
                 }
             })
         },
         getPage4:function(){
             var that=this;
-            $("#my-body").load("page4.html",function(){
-                $("#icon1").css("display","none");
-                that.renderUserTicket();
+            loadingPage("page4.html",function(){
+                $("#icon1").css("display","none");//删除小图标
+                that.renderUserTicket();//
                 //删除奖券
                 $(".remove-ticket").click(function(){
                     var num=$(this).attr("data-MyTic");
@@ -328,6 +333,7 @@
                 });
                 //开始抽奖
                 $("#get-ticket").click(function(){
+                    $("#loadImg").css("display","block");
                     $("#get-ticket").attr("disabled",true);
                     var obj={};
                     obj.userID=userID;
@@ -349,6 +355,7 @@
                         },
                         complete:function(){
                             $("#get-ticket").attr("disabled",false);
+                            $("#loadImg").css("display","none");
                         },
                         error:function(jqXHR, textStatus, errorThrown){
                             if(textStatus=="timeout"){
@@ -577,7 +584,7 @@
         },
         loadPage5:function(msg){
             var that=this;
-            $("#my-body").load("page5.html",function(){
+            loadingPage("page5.html",function(){
                 that.renderPage5(msg);
                 $("#sub-evaluate").click(function(){
                     that.obj.describe=$("#describe").val();
