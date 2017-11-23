@@ -15,15 +15,20 @@
         success:function(obj){
             if(obj.data===null){
                 //用户未注册
-                isVerrify=0
+                isVerrify=0;
+                $("#detail-page-box").html("未注册");
             }else if(obj.data.iswinner===false){
                 //用户注册了，单未抽奖
+                $("#detail-page-box").html("未抽奖");
                 isVerrify=1;
                 userID=obj.data.user_ID;
             }else if(obj.data.iswinner===true){
                 //已经抽过奖了
+                $("#detail-page-box").html("未核销");
                 isVerrify=2;
                 userID=obj.data.user_ID;
+            }else{
+                $("#detail-page-box").html("未知错误");
             };
 
             if(isVerrify===0){
@@ -36,6 +41,7 @@
         },
         error:function(){
             alert("页面错误，请刷新页面");
+            $("#detail-page-box").html("页面错误");
         }
     });
     function loadingPage(url,callback){
