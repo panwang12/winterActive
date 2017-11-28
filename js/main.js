@@ -59,14 +59,10 @@ $.ajax({
     data:JSON.stringify({openid:openid}),
     success:function(obj){
         if(obj.data===null){
-            //�û�δע��
             isVerrify=0
         }else if(obj.data.iswinner===false){
-            //�û�ע���ˣ���δ�齱
             isVerrify=1;
-
         } else if(obj.data.iswinner===true){
-            //�Ѿ��������
             isVerrify=2;
 
         };

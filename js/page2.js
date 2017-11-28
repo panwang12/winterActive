@@ -11,6 +11,7 @@
         type:"post",
         url:"http://winter.dfcitroenclub.com/api/Values/CheckUserForWinner",
         contentType:"application/json",
+        timeout:5000,
         data:JSON.stringify({openid:openid}),
         success:function(obj){
             if(obj.data===null){
@@ -39,9 +40,15 @@
                 viewMyPage.init(userID);
             }
         },
-        error:function(){
-            alert("页面错误，请刷新页面");
-            $("#detail-page-box").html("页面错误");
+        error:function(jqXHR, textStatus, errorThrown){
+            if(textStatus=="timeout"){
+                alert("由于访问人数过多，请稍后再试！");
+                $("#detail-page-box").html("加载失败...");
+            }else{
+                alert("页面错误，请刷新页面");
+                $("#detail-page-box").html("页面错误");
+            }
+
         }
     });
     function loadingPage(url,callback){
@@ -162,7 +169,7 @@
                         userID=res.data;//获取用户userID
                         isVerrify=1;//绑定用户状态 1
                         getPage3.init()//获得奖券信息
-                    }else if(msg.code===-2){
+                    }else if(res.code===-2){
                         //信息已经存在
                         alert("您已经参与过留资")
                     }
@@ -477,7 +484,7 @@
     //验证车型
     function checkVinCode(){
         var val=$("#vinCode").val();
-        var reg=/^[L,l][D,d][C,c][0-9a-zA-Z]{14}$/;
+        var reg=/(^[L,l][D,d][C,c][0-9a-zA-Z]{14}$)|(^[V,v][F,f][0-9a-zA-Z]{15}$)/;
         if(val==""|| !reg.test(val)){
             alert("vin码不正确");
             return false;
